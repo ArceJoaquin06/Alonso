@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro Panadería</title>
+  <style>
+    body { font-family: Arial; margin: 40px; background: #f6f6f6; }
+    h1 { text-align: center; }
+    form { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px #ccc; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 15px; padding: 10px 20px; background: #009879; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #007b63; }
+    table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background: #009879; color: white; }
+  </style>
+</head>
+<body>
+  <h1>📊 Registro de Ingresos y Egresos</h1>
+
+  <form id="form">
+    <label>Fecha:</label>
+    <input type="date" id="fecha" required>
+
+    <label>Sucursal:</label>
+    <input type="text" id="sucursal" required>
+
+    <label>Producto:</label>
+    <input type="text" id="producto" required>
+
+    <label>Cantidad:</label>
+    <input type="number" id="cantidad" required>
+
+    <label>Tipo:</label>
+    <select id="tipo" required>
+      <option value="Ingreso">Ingreso</option>
+      <option value="Egreso">Egreso</option>
+    </select>
+
+    <label>Observaciones:</label>
+    <textarea id="observaciones"></textarea>
+
+    <button type="submit">Agregar registro</button>
+  </form>
+
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Sucursal</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Tipo</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const URL = "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec"; // <-- tu URL de Apps Script
+
+    async function cargarDatos() {
+      const res = await fetch(URL);
+      const datos = await res.json();
+      const tbody = document.querySelector("#tabla tbody");
+      tbody.innerHTML = "";
+      datos.forEach(fila => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fila.Fecha}</td>
+          <td>${fila.Sucursal}</td>
+          <td>${fila.Producto}</td>
+          <td>${fila.Cantidad}</td>
+          <td>${fila.Tipo}</td>
+          <td>${fila.Observaciones || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.querySelector("#form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        fecha: document.querySelector("#fecha").value,
+        sucursal: document.querySelector("#sucursal").value,
+        producto: document.querySelector("#producto").value,
+        cantidad: document.querySelector("#cantidad").value,
+        tipo: document.querySelector("#tipo").value,
+        observaciones: document.querySelector("#observaciones").value
+      };
+
+      await fetch(URL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
+      
+      e.target.reset();
+      cargarDatos();
+    });
+
+    cargarDatos();
+  </script>
+</body>
+</html>
