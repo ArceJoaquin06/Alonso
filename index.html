@@ -1,97 +1,81 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel protegido</title>
+    <meta charset="UTF-8" />
+    <title>Panel Protegido</title>
 
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #app {
-            display: none; /* Oculta la app hasta que el usuario esté autenticado */
-        }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        #app { display: none; }
     </style>
 </head>
 <body>
 
     <!-- LOGIN -->
-    <div id="login" style="text-align:center; margin-top: 40px;">
-        <h2>Ingresar</h2>
+    <div id="login" style="text-align:center; margin-top:40px;">
+        <h2>Iniciar sesión</h2>
 
         <!-- Botón de Google -->
-        <div 
-            id="g_id_onload"
+        <div id="g_id_onload"
             data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
             data-callback="handleCredentialResponse"
             data-auto_prompt="false">
         </div>
 
-        <div 
-            class="g_id_signin"
+        <div class="g_id_signin"
             data-type="standard"
-            data-size="large"
-            data-theme="outline"
-            data-text="sign_in_with"
             data-shape="rectangular"
-            data-logo_alignment="left">
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large">
         </div>
     </div>
 
-    <!-- APP REAL (OCULTA HASTA LOGIN) -->
+    <!-- CONTENIDO REAL -->
     <div id="app">
-        <h1>Bienvenido a la app protegida</h1>
+        <h1>Bienvenido!</h1>
+        <p>Ya estás dentro del sistema protegido.</p>
 
-        <button onclick="cerrarSesion()">Cerrar sesión</button>
-
-        <h2>Datos protegidos:</h2>
-        <pre id="datos"></pre>
+        <pre id="dataBox"></pre>
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 
-            "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec";
-
         async function handleCredentialResponse(response) {
-            const token = response.credential;
-
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": "Bearer " + token
+                const token = response.credential;
+
+                const res = await fetch(
+                    "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
                     }
-                });
+                );
 
                 const data = await res.json();
 
                 if (!data.success) {
-                    alert("❌ Usuario NO autorizado");
-                    console.log(data);
+                    alert("Usuario no autorizado");
                     return;
                 }
 
-                // Si está autorizado:
+                // Mostrar contenido
                 document.getElementById("login").style.display = "none";
                 document.getElementById("app").style.display = "block";
 
-                // Mostrar datos
-                document.getElementById("datos").innerText =
+                // Mostrar datos en pantalla
+                document.getElementById("dataBox").textContent =
                     JSON.stringify(data.data, null, 2);
 
-            } catch (err) {
-                console.error(err);
+            } catch (e) {
                 alert("Error conectando con el servidor");
+                console.error(e);
             }
-        }
-
-        function cerrarSesion() {
-            google.accounts.id.disableAutoSelect();
-            location.reload();
         }
     </script>
 
