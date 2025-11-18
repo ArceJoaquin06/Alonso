@@ -17,7 +17,7 @@
         <div class="text-center text-white">
             <h2 class="fw-bold mb-3">Iniciar sesión</h2>
             <div id="g_id_onload"
-                data-client_id="AQUI_TU_CLIENT_ID"
+                data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
                 data-callback="handleCredentialResponse">
             </div>
 
@@ -61,7 +61,7 @@
             const token = response.credential;
 
             // Consultar Apps Script para validar usuario
-            const res = await fetch("AQUI_URL_WEBAPP", {
+            const res = await fetch("https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec", {
                 method: "GET",
                 headers: {
                     "Authorization": "Bearer " + token
