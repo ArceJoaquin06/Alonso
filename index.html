@@ -57,29 +57,48 @@
     </div>
 
     <script>
+    // Función básica para decodificar el JWT de Google
+        function decodeJwt(token) {
+            const payload = token.split('.')[1];
+            return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+        }
+
         async function handleCredentialResponse(response) {
             const token = response.credential;
+        
+        // 1) Decodificar token
+            const user = decodeJwt(token);
+            const email = user.email;
 
-            // Consultar Apps Script para validar usuario
-            const res = await fetch("https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec", {
+            if (!email) {
+                alert("No se pudo recuperar el email del usuario");
+                return;
+            }
+
+        // 2) Llamar Apps Script enviando el correo
+            const apiURL =
+                "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec" 
+                + "?email=" + encodeURIComponent(email);
+
+            const res = await fetch(apiURL, {
                 method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+                credentials: "omit"
             });
 
             const data = await res.json();
 
-            if (data.error) {
+        // 3) Validación
+            if (!data.success) {
                 alert("Usuario no autorizado");
                 return;
             }
 
-            // Mostrar página real
+        // 4) Mostrar la app
             document.getElementById("login").style.display = "none";
             document.getElementById("app").style.display = "block";
         }
     </script>
+
 
 </body>
 </html>
