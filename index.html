@@ -18,19 +18,19 @@
     <div id="login" style="text-align:center; margin-top:40px;">
         <h2>Iniciar sesión</h2>
 
-        <!-- Botón de Google -->
+        <!-- Botón Google -->
         <div id="g_id_onload"
-            data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
-            data-callback="handleCredentialResponse"
-            data-auto_prompt="false">
+             data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
         </div>
 
         <div class="g_id_signin"
-            data-type="standard"
-            data-shape="rectangular"
-            data-theme="outline"
-            data-text="signin_with"
-            data-size="large">
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large">
         </div>
     </div>
 
@@ -45,19 +45,19 @@
     <script>
         async function handleCredentialResponse(response) {
             try {
-                const token = response.credential;
+                const idToken = response.credential; // ID TOKEN DE GOOGLE
 
                 const res = await fetch(
                     "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec",
                     {
-                        method: "GET",
-                        headers: {
-                            "Authorization": "Bearer " + token
-                        }
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token: idToken })
                     }
                 );
 
                 const data = await res.json();
+                console.log("Respuesta:", data);
 
                 if (!data.success) {
                     alert("Usuario no autorizado");
@@ -68,13 +68,13 @@
                 document.getElementById("login").style.display = "none";
                 document.getElementById("app").style.display = "block";
 
-                // Mostrar datos en pantalla
+                // Mostrar datos
                 document.getElementById("dataBox").textContent =
                     JSON.stringify(data.data, null, 2);
 
-            } catch (e) {
+            } catch (error) {
                 alert("Error conectando con el servidor");
-                console.error(e);
+                console.error(error);
             }
         }
     </script>
