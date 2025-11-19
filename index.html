@@ -1,36 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel Seguro</title>
+  <title>Panel Protegido</title>
 </head>
 <body>
 
-<h2>Ingresar al sistema</h2>
+<h2>Ingreso</h2>
 
-<label>Email autorizado:</label><br>
-<input type="email" id="emailInput" placeholder="tu_email@gmail.com"><br><br>
-
-<button onclick="enterSystem()">Entrar</button>
+<p>Escribe tu email autorizado:</p>
+<input id="emailInput" type="email" placeholder="tuemail@gmail.com">
+<button onclick="login()">Entrar</button>
 
 <hr>
 
 <h2>Datos</h2>
-<pre id="dataBox">No has iniciado sesión</pre>
+<pre id="dataBox">Esperando login...</pre>
 
 <script>
-  async function enterSystem() {
+  async function login() {
     const email = document.getElementById("emailInput").value.trim();
 
-    if (!email) {
-      alert("Escribe tu email autorizado");
+    if (email === "") {
+      alert("Escribe un email.");
       return;
     }
 
-    const URL = "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec?email=" + encodeURIComponent(email);
-
     try {
-      const res = await fetch(URL);
+      const url =
+        "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec"
+        + "?email=" + encodeURIComponent(email);
+
+      const res = await fetch(url);
       const data = await res.json();
 
       if (!data.success) {
@@ -41,11 +42,12 @@
       document.getElementById("dataBox").textContent =
         JSON.stringify(data.data, null, 2);
 
-    } catch (err) {
-      document.getElementById("dataBox").textContent = "Error conectando al servidor";
+    } catch (e) {
+      document.getElementById("dataBox").textContent = "Error conectando";
     }
   }
 </script>
 
 </body>
 </html>
+
