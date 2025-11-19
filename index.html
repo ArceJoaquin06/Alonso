@@ -1,83 +1,67 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Panel Protegido</title>
+  <meta charset="UTF-8">
+  <title>Panel Protegido</title>
 
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-        #app { display: none; }
-    </style>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #app { display: none; }
+  </style>
 </head>
 <body>
 
-    <!-- LOGIN -->
-    <div id="login" style="text-align:center; margin-top:40px;">
-        <h2>Iniciar sesión</h2>
+  <div id="login" style="text-align:center;">
+    <h2>Iniciar sesión</h2>
 
-        <!-- Botón Google -->
-        <div id="g_id_onload"
-             data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="signin_with"
-             data-size="large">
-        </div>
+    <div id="g_id_onload"
+         data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
     </div>
 
-    <!-- CONTENIDO REAL -->
-    <div id="app">
-        <h1>Bienvenido!</h1>
-        <p>Ya estás dentro del sistema protegido.</p>
-
-        <pre id="dataBox"></pre>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large">
     </div>
+  </div>
 
-    <script>
-        async function handleCredentialResponse(response) {
-            try {
-                const idToken = response.credential; // ID TOKEN DE GOOGLE
+  <div id="app">
+    <h1>Bienvenido!</h1>
+    <p>Acceso concedido.</p>
+    <pre id="dataBox"></pre>
+  </div>
 
-                const res = await fetch(
-                    "https://script.google.com/macros/s/AKfycbx6j4DwX9zpE7zzPhifTMbpuDWcmUtM35agL48qhhb8ABY29y1IWc2ayAxMBMfyTPXH/exec",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ token: idToken })
-                    }
-                );
+  <script>
+    async function handleCredentialResponse(respuesta) {
+      try {
+        const token = respuesta.credential;
 
-                const data = await res.json();
-                console.log("Respuesta:", data);
+        const res = await fetch(
+          "https://script.google.com/macros/s/AKfycbxYPTzPuGgb3dVktGwqEB01-6O6pyESrNAFCazPVfgKzE14fxKOuItfVEwUzksZBooT/exec?token=" + token
+        );
 
-                if (!data.success) {
-                    alert("Usuario no autorizado");
-                    return;
-                }
+        const data = await res.json();
 
-                // Mostrar contenido
-                document.getElementById("login").style.display = "none";
-                document.getElementById("app").style.display = "block";
-
-                // Mostrar datos
-                document.getElementById("dataBox").textContent =
-                    JSON.stringify(data.data, null, 2);
-
-            } catch (error) {
-                alert("Error conectando con el servidor");
-                console.error(error);
-            }
+        if (!data.success) {
+          alert("No autorizado");
+          return;
         }
-    </script>
+
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+        document.getElementById("dataBox").textContent =
+          JSON.stringify(data.data, null, 2);
+
+      } catch (err) {
+        console.error(err);
+        alert("Error conectando con el servidor");
+      }
+    }
+  </script>
 
 </body>
 </html>
