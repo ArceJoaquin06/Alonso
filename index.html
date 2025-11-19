@@ -1,67 +1,35 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Panel Protegido</title>
-
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    #app { display: none; }
-  </style>
+  <title>Panel</title>
 </head>
 <body>
 
-  <div id="login" style="text-align:center;">
-    <h2>Iniciar sesión</h2>
+<h2>Datos</h2>
+<pre id="dataBox">Cargando...</pre>
 
-    <div id="g_id_onload"
-         data-client_id="449560223226-s67499o99vrurmdnp87ju5hsabhk743g.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
+<script>
+  async function loadData() {
+    try {
+      const res = await fetch("TU_URL_EXEC_AQUÍ");
+      const data = await res.json();
 
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large">
-    </div>
-  </div>
-
-  <div id="app">
-    <h1>Bienvenido!</h1>
-    <p>Acceso concedido.</p>
-    <pre id="dataBox"></pre>
-  </div>
-
-  <script>
-    async function handleCredentialResponse(respuesta) {
-      try {
-        const token = respuesta.credential;
-
-        const res = await fetch(
-          "https://script.google.com/macros/s/AKfycbxYPTzPuGgb3dVktGwqEB01-6O6pyESrNAFCazPVfgKzE14fxKOuItfVEwUzksZBooT/exec?token=" + token
-        );
-
-        const data = await res.json();
-
-        if (!data.success) {
-          alert("No autorizado");
-          return;
-        }
-
-        document.getElementById("login").style.display = "none";
-        document.getElementById("app").style.display = "block";
-
-        document.getElementById("dataBox").textContent =
-          JSON.stringify(data.data, null, 2);
-
-      } catch (err) {
-        console.error(err);
-        alert("Error conectando con el servidor");
+      if (!data.success) {
+        document.getElementById("dataBox").textContent = "NO AUTORIZADO";
+        return;
       }
+
+      document.getElementById("dataBox").textContent =
+        JSON.stringify(data.data, null, 2);
+
+    } catch (e) {
+      document.getElementById("dataBox").textContent = "Error conectando";
     }
-  </script>
+  }
+
+  loadData();
+</script>
 
 </body>
 </html>
