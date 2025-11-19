@@ -2,112 +2,46 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel Protegido</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-    }
-
-    #loginBox, #app {
-      max-width: 400px;
-      margin: 40px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
-    }
-
-    #app {
-      display: none;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 15px;
-      border: none;
-      background: #0077ff;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    pre {
-      background: #fafafa;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      overflow-x: auto;
-    }
-  </style>
+  <title>Panel con Login</title>
 </head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginBox">
-    <h2>Ingresar al sistema</h2>
-    <p>Escribe tu email autorizado:</p>
+<h2>Ingresar al sistema</h2>
 
-    <input type="email" id="emailInput" placeholder="tuemail@gmail.com">
-    <button onclick="login()">Entrar</button>
+<p>Escribe tu email autorizado:</p>
+<input id="emailInput" type="email" placeholder="tu@email.com">
+<button onclick="login()">Entrar</button>
 
-    <p id="errorMsg" style="color:red; margin-top:10px;"></p>
-  </div>
-
-  <!-- APP -->
-  <div id="app">
-    <h2>Bienvenido</h2>
-
-    <p>Datos de la planilla:</p>
-    <pre id="dataBox">Cargando...</pre>
-  </div>
+<h3>Datos:</h3>
+<pre id="dataBox">Esperando login...</pre>
 
 <script>
-
   async function login() {
-    const email = document.getElementById("emailInput").value.trim().toLowerCase();
+    const email = document.getElementById("emailInput").value.trim();
 
     if (!email) {
-      document.getElementById("errorMsg").textContent = "Ingresá un email.";
+      alert("Ingresa un email");
       return;
     }
 
     try {
-      const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbxYPTzPuGgb3dVktGwqEB01-6O6pyESrNAFCazPVfgKzE14fxKOuItfVEwUzksZBooT/exec?email=" + encodeURIComponent(email)
-      );
+      const url = "https://script.google.com/macros/s/AKfycbxYPTzPuGgb3dVktGwqEB01-6O6pyESrNAFCazPVfgKzE14fxKOuItfVEwUzksZBooT/exec?email=" + encodeURIComponent(email);
 
+      const res = await fetch(url);
       const data = await res.json();
 
       if (!data.success) {
-        document.getElementById("errorMsg").textContent = "NO AUTORIZADO";
+        document.getElementById("dataBox").textContent = "NO AUTORIZADO";
         return;
       }
-
-      // Mostrar App
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("app").style.display = "block";
 
       document.getElementById("dataBox").textContent =
         JSON.stringify(data.data, null, 2);
 
     } catch (e) {
-      document.getElementById("errorMsg").textContent = "Error conectando";
+      document.getElementById("dataBox").textContent = "Error conectando";
     }
   }
-
 </script>
 
 </body>
